@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="./images/joker.ico" type="image/x-icon">
+    <title>卡牌遊戲</title>
+    <style>
+        #game {
+            width:500px;
+            height:500px;
+            background-color:blanchedalmond;
+            margin:auto;
+            margin-top:100px;
+            box-shadow: 5px 5px 5px #888888;
+        }
+        #list{
+            width:150px;
+            height:150px;
+            position:absolute;
+            background-color:burlywood;
+            border-radius:10px;
+            top:350px;
+            left:250px;
+            text-align: center;
+            line-height:40px;
+            font-size:18px;
+            box-shadow: 10px 10px 5px #888888;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            /* 設定子元素在 3D 空間內 */
+            transform-style: preserve-3d;
+            position: relative;
+            transition: transform 0.5s;
+            float: left;
+            margin: 10px;
+        }
+
+        .open {/*整張翻牌*/
+            transform: rotateY(180deg);
+        }
+
+        .front {
+            width: 100%;
+            height: 100%;
+            background-image: url(./card/Red_back.jpg);
+            background-position: center;/* 背景圖片(牌)的位置:置中*/
+            background-size: contain;/*背景圖片大於容器，會呈現在容器內*/
+            background-repeat: no-repeat;/*背景圖片(牌)不要重複*/
+            position: absolute;
+        }
+
+        .back {
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: absolute;
+            transform: rotateY(180deg);
+        }
+
+        .wash{
+            width:100px;
+            height:150px;
+            position:absolute;
+            left:20%;
+            top:650px;
+            /* 動畫名稱 */
+            animation-name:move;
+            /*動畫時間*/
+            /* animation-duration: 3s; */
+            /*動畫播放次數*/
+            animation-iteration-count: 1;
+            /*播放模式*/
+            animation-direction: normal;
+            /*線性加速*/
+            animation-timing-function: linear;
+
+
+        }
+        @keyframes move{
+            0%{
+                top:550px;
+            }
+            10%{
+                top:600px;
+            }
+            20%{
+                top:550px;
+            }
+            30%{
+                top:600px;
+            }
+            40%{
+                top:550px;
+            }
+            50%{
+                top:600px;
+            }
+            60%{
+                top:550px;
+            }
+            70%{
+                top:600px;
+            }
+            80%{
+                top:550px;
+            }
+            90%{
+                top:600px;
+            }
+            100%{
+                top:600px;
+            }
+        }
+        .wash2{
+            width:100px;
+            height:150px;
+            position:absolute;
+            left:20%;
+            top:650px;
+
+             /* 動畫名稱 */
+             animation-name:move2;
+            /*動畫時間*/
+            /* animation-duration: 3s; */
+            /*動畫播放次數*/
+            animation-iteration-count: 1;
+            /*播放模式*/
+            animation-direction: normal;
+            /*線性加速*/
+            animation-timing-function: linear;  
+
+        }
+        @keyframes move2{
+            0%{
+                top:600px;
+            }
+            10%{
+                top:550px;
+            }
+            20%{
+                top:600px;
+            }
+            30%{
+                top:550px;
+            }
+            40%{
+                top:600px;
+            }
+            50%{
+                top:550px;
+            }
+            60%{
+                top:600px;
+            }
+            70%{
+                top:550px;
+            }
+            80%{
+                top:600px;
+            }
+            90%{
+                top:550px;
+            }
+            100%{
+                top:600px;
+            }
+        }
+        .img{
+            width:100%;
+            height:100%;
+        }
+        #restart{
+            display:none;
+            margin:auto;
+            margin-top:18px;
+        }
+        #start{
+            display:none;
+            margin:auto;
+            margin-top:18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+    <div class="abc">
+        <div class="wash"><img src="./card/Red_back.jpg" class="img"></div>   
+        <div class="wash2"><img src="./card/Red_back.jpg" class="img"></div> 
+    </div>
+    <div id="list">
+        <input type="button" value="開始遊戲" id="start">
+        <input type="button" value="洗牌" id="wash">
+        <input type="button" value="重新開始" id="restart">
+            <p>分數: <span id="score">0</span>分</p>
+            <p>經過: <span id="sec">5</span>秒</p>
+    </div>
+    <script src="./jquery-3.4.1.min.js"></script>
+    <script>
+        $(function(){
+            //分數
+            let score = 0;
+            //遊戲時間
+            let sec = 0;
+            //遊戲初始計時
+            let gametimer = 0;
+            
+            //洗牌
+                
+            $("#wash").on("click",function(){
+                $("#wash").css("display","none");//洗牌按鈕就會關閉
+                $("#start").css("display","block");//開始按鈕就會打開 
+                $("#start").attr("disabled", false);
+                $(".wash").css( "animation-duration","2s");
+                $(".wash2").css( "animation-duration","2s");
+                    })
+
+          $("#start").on("click",function(){
+            $("#start").css( "display","none");//開始功能消失
+            $(".abc").css( "display","none");//洗牌功能消失
+            $("#restart").css( "display","block");//從新開始功能打開
+
+            //重設遊戲時間
+                let sec = 0;
+                $("#sec").text(sec);
+                let score = 0;
+                $("#score").text(score);
+
+               // 產生 16 張卡片
+               for(let i=0;i<16;i++) {
+                $("#game").append(/*html*/`<div class="card">
+                        <div class="front"></div>
+                        <div class="back"></div>
+                    </div>
+                `)
+            }
+
+            for(let i=0;i<$(".card").length;i++){
+                /*
+                    每個數字要有兩個才能消除
+                    以 16 張牌來說，就有 8 個數字
+                    以 i / 8 的餘數來判斷要加哪張牌
+                    因為牌號從 1 開始，所以要加 1
+                */
+                let add = i % ( $(".card").length / 2 ) + 1;
+                $(".card").eq(i).find(".back").css("background-image", `url(./card/${add}S.jpg)`);
+                $(".card").eq(i).attr("data-card", add);
+
+                // 隨機取一張牌，將他放在目前迴圈跑到的牌後
+                let target = Math.floor( Math.random()*$(".card").length );
+                $(".card").eq(target).insertAfter( $(".card").eq(i) );
+            }
+
+            //計時開始
+            gametimer = setInterval(function() { 
+                sec++;
+                $("#sec").text(sec);
+
+                if(sec < 2){
+                    $("#game").css("pointer-events","none");
+                    $('.back').css('transform',' scale(-1)');
+                    $('.back').css('background-position','left');
+                    $('.front').css('background-position','left');
+                    
+                }else{
+                    $("#game").css("pointer-events","auto");
+                    $('.back').css('transform','rotateY(180deg)');
+                    $('.back').css('background-position','center');
+                    $('.front').css('background-position','center');
+                }
+            }, 1000);
+           
+                    
+                
+            
+            //當卡片被點擊時的事件
+            $(".card").on("click", function(){
+                // 如果翻開的牌小於兩張，且這張還沒翻開
+                if( $(".open").length < 2 && !$(this).hasClass("open") ){
+                    $(this).addClass("open");
+                }
+
+                // 如果翻開兩張了
+                if($(".open").length === 2 ) {
+                    // 一秒後翻回來
+                    setTimeout(()=>{
+                        $(".open").removeClass("open");
+                    }, 1000)
+
+                    // 如果兩張一樣，淡出
+                    if($(".open").eq(0).attr("data-card") === $(".open").eq(1).attr("data-card") ){
+                        $(".open").fadeTo(1000, 0).addClass("clear");
+                        score++;
+                        $("#score").text(score);
+                    }
+                }
+                
+                // 如果全部都 clear
+                if( $(".clear").length == $(".card").length ){
+                    clearInterval(gametimer);
+                    setTimeout(() => {
+                        alert("恭喜過關"); 
+                        $("#game").css("pointer-events","none"); //當清掉所有卡牌時點擊卡面沒有反應
+                        }, 500); 
+                    }   
+            })
+          })
+                
+                
+                //重新開始的按鈕事件
+            $("#restart").on("click",function(){
+                window.location.reload()
+            })
+              
+        })
+    </script>
+</body>
+</html>
